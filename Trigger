@@ -1,0 +1,15 @@
+#MANTENER EL INVENTARIO ACTUALIZADO 
+
+DELIMITER //
+CREATE TRIGGER actualizar_inventario
+AFTER INSERT ON ventas
+FOR EACH ROW
+BEGIN
+    UPDATE productos 
+    SET stock = stock - NEW.cantidad
+    WHERE id_producto = NEW.id_producto;
+    
+    INSERT INTO auditoria (id_usuario, accion)
+    VALUES (NEW.id_usuario, CONCAT('Realizó una venta del producto ', NEW.id_producto, ' Cantidad: ', NEW.cantidad));
+END //
+DELIMITER ;
